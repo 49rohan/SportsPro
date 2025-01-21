@@ -1,62 +1,49 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SportsPro.Models;
-using Microsoft.EntityFrameworkCore;
-using global::SportsPro.Models;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace SportsPro.Controllers
 {
     public class TechnicianController : Controller
     {
-        private readonly SportsProContext _context;
+        private SportsProContext context;
 
-        public TechnicianController(SportsProContext context)
+        public TechnicianController(SportsProContext ctx)
         {
-            _context = context;
+            context = ctx;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var technicians = await _context.Technicians
-                .Where(t => t.TechnicianID != -1)
-                .OrderBy(t => t.Name)
-                .ToListAsync();
+            var technicians = context.Technicians.OrderBy(t => t.Name).ToList();
             return View(technicians);
         }
 
+        [HttpGet]
         public IActionResult Add()
         {
-            return View("Edit", new Technician());
+            var technician = new Technician();
+            return View("Edit", technician);
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var technician = _context.Technicians.Find(id);
-            if (technician == null)
-            {
-                return NotFound();
-            }
+            var technician = context.Technicians.Find(id);
             return View(technician);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Edit(Technician technician)
         {
             if (ModelState.IsValid)
             {
-                if (technician.TechnicianID == 0)
-                {
-                    _context.Technicians.Add(technician);
-                }
+                if (technician.TechnicianId == 0)
+                    context.Technicians.Add(technician);
                 else
-                {
-                    _context.Technicians.Update(technician);
-                }
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                    context.Technicians.Update(technician);
+                context.SaveChanges();
+                return RedirectToAction("Index");
             }
             return View(technician);
         }
@@ -64,25 +51,16 @@ namespace SportsPro.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var technician = _context.Technicians.Find(id);
-            if (technician == null)
-            {
-                return NotFound();
-            }
+            var technician = context.Technicians.Find(id);
             return View(technician);
         }
 
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        [HttpPost]
+        public IActionResult Delete(Technician technician)
         {
-            var technician = _context.Technicians.Find(id);
-            if (technician != null)
-            {
-                _context.Technicians.Remove(technician);
-                _context.SaveChanges();
-            }
-            return RedirectToAction(nameof(Index));
+            context.Technicians.Remove(technician);
+            context.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }
