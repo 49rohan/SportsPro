@@ -1,0 +1,67 @@
+﻿@model Incident
+
+@{
+    string title = ViewBag.Action + " Incident";
+    ViewBag.Title = title;
+}
+
+@section scripts {
+    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/
+                     jquery.validate.unobtrusive.min.js"></script>
+}
+
+<h1>@ViewBag.Title</h1>
+
+<form asp-action="@ViewBag.Action" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="CustomerID">Customer</label>
+        <select asp-for="CustomerID" asp-items="ViewBag.Customers" class="form-control">
+            <option></option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ProductID">Product</label>
+        <select asp-for="ProductID" asp-items="ViewBag.Products" class="form-control">
+            <option></option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TechnicianID">Technician</label>
+        <select asp-for="TechnicianID" asp-items="ViewBag.Technicians" class="form-control">
+            <option>Assign a technician...</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DateOpened"></label>
+        <textarea asp-for="DateOpened" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DateClosed"></label>
+        <textarea asp-for="DateClosed" class="form-control"></textarea>
+    </div>
+
+    <input asp-for="IncidentID" type="hidden" />
+
+    <button type="submit" class="btn btn-primary">
+        @(ViewBag.Action == "Edit" ? "Save" : "Add") 
+    </button>
+    <a asp-action="List" class="btn btn-primary">Cancel</a>
+</form>
+
