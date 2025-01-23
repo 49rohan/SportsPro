@@ -12,6 +12,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    @RenderSection("scripts", false)
 </head>
 <body>
     <header>
@@ -47,5 +48,6 @@
     <footer class="border-top footer text-muted">
         <div class="container">&copy; @DateTime.Now.Year - SportsPro</div>
     </footer>
+
 </body>
 </html>
