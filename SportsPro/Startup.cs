@@ -19,9 +19,6 @@ namespace SportsPro
         // Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddDbContext<SportsProContext>(options =>
-        options.UseSqlServer(Configuration.GetConnectionString("SportsPro")));
             services.AddControllersWithViews();
 
             services.AddDbContext<SportsProContext>(options =>
@@ -59,6 +56,8 @@ namespace SportsPro
             {
                 endpoints.MapControllerRoute(
                     name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+             });
                     pattern: "{controller:lowercase}/{action:lowercase}/{id?}/",
                     defaults: new { controller = "Home", action = "Index" });
             });
