@@ -16,10 +16,12 @@ namespace SportsPro
         }
 
         public IConfiguration Configuration { get; }
-
         // Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddDbContext<SportsProContext>(options =>
+        options.UseSqlServer(Configuration.GetConnectionString("SportsPro")));
             services.AddControllersWithViews();
 
             services.AddDbContext<SportsProContext>(options =>
