@@ -6,7 +6,7 @@ namespace SportsPro.Models
 
     public class Technician
     {
-        public int TechnicianId { get; set; }
+        public int TechnicianID { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }

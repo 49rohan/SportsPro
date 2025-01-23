@@ -1,7 +1,7 @@
 ﻿@model SportsPro.Models.Technician
 
 @{
-    ViewData["Title"] = Model.TechnicianId == 0 ? "Add Technician" : "Edit Technician";
+    ViewData["Title"] = Model.TechnicianID == 0 ? "Add Technician" : "Edit Technician";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -27,7 +27,7 @@
         <span asp-validation-for="Phone" class="text-danger"></span>
     </div>
 
-    <input type="hidden" asp-for="TechnicianId" />
+    <input type="hidden" asp-for="TechnicianID" />
 
     <div class="form-group">
         <input type="submit" value="Save" class="btn btn-primary" />

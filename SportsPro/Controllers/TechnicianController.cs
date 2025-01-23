@@ -38,7 +38,7 @@ namespace SportsPro.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (technician.TechnicianId == 0)
+                if (technician.TechnicianID == 0)
                     context.Technicians.Add(technician);
                 else
                     context.Technicians.Update(technician);
