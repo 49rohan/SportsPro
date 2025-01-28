@@ -58,9 +58,7 @@ namespace SportsPro
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
              });
-                    pattern: "{controller:lowercase}/{action:lowercase}/{id?}/",
-                    defaults: new { controller = "Home", action = "Index" });
-            });
+
         }
     }
 }

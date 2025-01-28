@@ -4,6 +4,12 @@
     ViewData["Title"] = Model.CustomerID == 0 ? "Add Customer" : "Edit Customer";
 }
 
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation.unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+}
+
 <h2>@ViewData["Title"]</h2>
 
 <form asp-controller="Customer" asp-action="AddEdit" method="post">
