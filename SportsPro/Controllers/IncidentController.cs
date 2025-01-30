@@ -9,14 +9,13 @@ namespace SportsPro.Controllers
 {
     public class IncidentController : Controller
     {
-        private SportsProContext context;
+        private readonly SportsProContext context;
+
         public IncidentController(SportsProContext context)
         {
             this.context = context;
         }
 
-
-        // Uses IncidentManagerViewModel instead of directly returning incidents
         public IActionResult List(string filter = "All")
         {
             var incidents = context.Incidents
@@ -31,20 +30,12 @@ namespace SportsPro.Controllers
                 FilterType = filter
             };
 
-            return View(viewModel); // Passes the view model instead of the raw list
-
-        [Route("/incidents")]
-        public IActionResult List()
-        {
-            var incidents = context.Incidents.Include(i => i.Customer).Include(i => i.Product).OrderBy(i => i.Title).ToList();
-            return View(incidents);
-
+            return View(viewModel);
         }
 
         [HttpGet]
         public IActionResult Add()
         {
-
             var viewModel = new IncidentEditViewModel
             {
                 Customers = context.Customers.ToList(),
@@ -54,15 +45,7 @@ namespace SportsPro.Controllers
                 OperationType = "Add"
             };
 
-            return View("AddEdit", viewModel); // Uses ViewModel
-
-            Incident incident = new Incident();
-            ViewBag.Action = "Add";
-            ViewBag.Customers = new SelectList(context.Customers, "CustomerID", "FullName");
-            ViewBag.Products = new SelectList(context.Products, "ProductID", "Name");
-            ViewBag.Technicians = new SelectList(context.Technicians, "TechnicianID", "Name");
-            return View("AddEdit", incident);
-
+            return View("AddEdit", viewModel);
         }
 
         [HttpPost]
@@ -75,36 +58,22 @@ namespace SportsPro.Controllers
                 return RedirectToAction("List");
             }
 
-
-            // Reload dropdowns if invalid
             viewModel.Customers = context.Customers.ToList();
             viewModel.Products = context.Products.ToList();
             viewModel.Technicians = context.Technicians.ToList();
             viewModel.OperationType = "Add";
 
             return View("AddEdit", viewModel);
-
-            ViewBag.Action = "Add";
-            ViewBag.Customers = new SelectList(context.Customers, "CustomerID", "FullName");
-            ViewBag.Products = new SelectList(context.Products, "ProductID", "Name");
-            ViewBag.Technicians = new SelectList(context.Technicians, "TechnicianID", "Name");
-            return View("AddEdit", incident);
-
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-
             var incident = context.Incidents
-
-            Incident incident = context.Incidents
-
                 .Include(i => i.Customer)
                 .Include(i => i.Product)
                 .Include(i => i.Technician)
                 .FirstOrDefault(i => i.IncidentID == id);
-
 
             var viewModel = new IncidentEditViewModel
             {
@@ -115,14 +84,7 @@ namespace SportsPro.Controllers
                 OperationType = "Edit"
             };
 
-            return View("AddEdit", viewModel); // Uses ViewModel
-
-            ViewBag.Customers = new SelectList(context.Customers, "CustomerID", "FullName", incident.CustomerID);
-            ViewBag.Products = new SelectList(context.Products, "ProductID", "Name", incident.ProductID);
-            ViewBag.Technicians = new SelectList(context.Technicians, "TechnicianID", "Name", incident.TechnicianID);
-            ViewBag.Action = "Edit";
-            return View("AddEdit", incident);
-
+            return View("AddEdit", viewModel);
         }
 
         [HttpPost]
@@ -131,39 +93,23 @@ namespace SportsPro.Controllers
             if (ModelState.IsValid)
             {
                 context.Incidents.Update(viewModel.CurrentIncident);
-
-                context.Incidents.Update(incident);
-
                 context.SaveChanges();
                 return RedirectToAction("List");
             }
 
-
-            // Reload dropdowns if invalid
             viewModel.Customers = context.Customers.ToList();
             viewModel.Products = context.Products.ToList();
             viewModel.Technicians = context.Technicians.ToList();
             viewModel.OperationType = "Edit";
 
             return View("AddEdit", viewModel);
-
-            ViewBag.Customers = new SelectList(context.Customers, "CustomerID", "FullName", incident.CustomerID);
-            ViewBag.Products = new SelectList(context.Products, "ProductID", "Name", incident.ProductID);
-            ViewBag.Technicians = new SelectList(context.Technicians, "TechnicianID", "Name", incident.TechnicianID);
-            ViewBag.Action = "Edit";
-            return View("AddEdit", incident);
-
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-
-            Incident incident = context.Incidents.FirstOrDefault(i => i.IncidentID == id);
-
-            Incident incident = context.Incidents
+            var incident = context.Incidents
                 .FirstOrDefault(i => i.IncidentID == id);
-
             return View(incident);
         }
 
@@ -175,8 +121,4 @@ namespace SportsPro.Controllers
             return RedirectToAction("List");
         }
     }
-
 }
-
-}
-
