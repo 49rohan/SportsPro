@@ -4,6 +4,12 @@
     ViewData["Title"] = Model.TechnicianID == 0 ? "Add Technician" : "Edit Technician";
 }
 
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation.unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+}
+
 <h1>@ViewData["Title"]</h1>
 
 <form asp-action="Edit" method="post">
@@ -31,10 +37,6 @@
 
     <div class="form-group">
         <input type="submit" value="Save" class="btn btn-primary" />
-        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        <a asp-action="List" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
