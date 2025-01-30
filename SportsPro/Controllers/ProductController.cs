@@ -15,33 +15,31 @@ namespace SportsPro.Controllers
             _context = context;
         }
 
-        // Displays the list of products
+        [Route("/products")]
         public IActionResult List()
         {
             var products = _context.Products.ToList();
             return View(products);
         }
 
-        // GET: Displays the Add/Edit Product form
         [HttpGet]
         public IActionResult AddEdit(int? id)
         {
             var product = id == null ? new Product() : _context.Products.Find(id);
             ViewBag.Action = id == null ? "Add" : "Edit";
-            return View(product); // This will look for AddEdit.cshtml
+            return View(product);
         }
 
-        // POST: Handles the form submission for Add/Edit
         [HttpPost]
         public IActionResult AddEdit(Product product)
         {
             if (ModelState.IsValid)
             {
-                if (product.ProductID == 0) // Add new product
+                if (product.ProductID == 0)
                 {
                     _context.Products.Add(product);
                 }
-                else // Update existing product
+                else
                 {
                     _context.Products.Update(product);
                 }
