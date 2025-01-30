@@ -51,11 +51,11 @@ namespace SportsPro.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (customer.CustomerID == 0) // Add operation
+                if (customer.CustomerID == 0) 
                 {
                     _context.Customers.Add(customer);
                 }
-                else // Edit operation
+                else 
                 {
                     _context.Attach(customer);
                     _context.Entry(customer).State = EntityState.Modified;

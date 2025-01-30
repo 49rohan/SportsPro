@@ -1,13 +1,13 @@
-﻿@model Incident
+﻿@model SportsPro.Models.Incident
 @{
-    ViewBag.Title = "Delete Product";
+    ViewBag.Title = "Delete Incident";
 }
 
 <h1>Confirm Deletion</h1>
 <h3>Incident Title: @Model.Title</h3>
 
 <form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="IncidentID"/>
-    <button type="submit" class="btn btn-primary">Delete</button>
-    <a asp-action="List" class="btn btn-primary">Cancel</a>
+    <input type="hidden" asp-for="IncidentID" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="List" class="btn btn-secondary">Cancel</a>
 </form>

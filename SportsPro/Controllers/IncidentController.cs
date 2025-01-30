@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SportsPro.Models;
-using System.ComponentModel.Design.Serialization;
+using SportsPro.Models.ViewModels;
 using System.Linq;
 
 namespace SportsPro.Controllers
@@ -15,110 +15,111 @@ namespace SportsPro.Controllers
             this.context = context;
         }
 
-        // Gets the data from the database
-        public IActionResult List() 
+        // Uses IncidentManagerViewModel instead of directly returning incidents
+        public IActionResult List(string filter = "All")
         {
-            var incidents = context.Incidents.Include(i => i.Customer).Include(i => i.Product).OrderBy(i =>i.Title).ToList();
-            return View(incidents); // Passes the list to the view to display them
+            var incidents = context.Incidents
+                .Include(i => i.Customer)
+                .Include(i => i.Product)
+                .OrderBy(i => i.Title)
+                .ToList();
+
+            var viewModel = new IncidentManagerViewModel
+            {
+                Incidents = incidents,
+                FilterType = filter
+            };
+
+            return View(viewModel); // Passes the view model instead of the raw list
         }
 
         [HttpGet]
         public IActionResult Add()
         {
-            // Create incident object
-            Incident incident = new Incident();
+            var viewModel = new IncidentEditViewModel
+            {
+                Customers = context.Customers.ToList(),
+                Products = context.Products.ToList(),
+                Technicians = context.Technicians.ToList(),
+                CurrentIncident = new Incident(),
+                OperationType = "Add"
+            };
 
-            ViewBag.Action = "Add";
-
-            // Load dropdown options for Customers, Products, and Technicians
-            ViewBag.Customers = new SelectList(context.Customers, "CustomerID", "FullName");
-            ViewBag.Products = new SelectList(context.Products, "ProductID", "Name");
-            ViewBag.Technicians = new SelectList(context.Technicians, "TechnicianID", "Name");
-
-            return View("AddEdit", incident); // Returns the page with the incident object
+            return View("AddEdit", viewModel); // Uses ViewModel
         }
 
         [HttpPost]
-        public IActionResult Add(Incident incident)
+        public IActionResult Add(IncidentEditViewModel viewModel)
         {
-            // If all inputs are valid, it adds the new incident to the database
             if (ModelState.IsValid)
             {
-                context.Incidents.Add(incident);
+                context.Incidents.Add(viewModel.CurrentIncident);
                 context.SaveChanges();
-                return RedirectToAction("List"); // Takes user to the list page
+                return RedirectToAction("List");
             }
 
-            ViewBag.Action = "Add";
+            // Reload dropdowns if invalid
+            viewModel.Customers = context.Customers.ToList();
+            viewModel.Products = context.Products.ToList();
+            viewModel.Technicians = context.Technicians.ToList();
+            viewModel.OperationType = "Add";
 
-            // If inputs not valid, reloads the dropdowns and shows the form again
-            ViewBag.Customers = new SelectList(context.Customers, "CustomerID", "FullName");
-            ViewBag.Products = new SelectList(context.Products, "ProductID", "Name");
-            ViewBag.Technicians = new SelectList(context.Technicians, "TechnicianID", "Name");
-
-            return View("AddEdit", incident); // Returns the page with the incident object
+            return View("AddEdit", viewModel);
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            // Find the incident by ID
-            Incident incident = context.Incidents
+            var incident = context.Incidents
                 .Include(i => i.Customer)
                 .Include(i => i.Product)
                 .Include(i => i.Technician)
                 .FirstOrDefault(i => i.IncidentID == id);
 
-            // Fill in dropdown data
-            ViewBag.Customers = new SelectList(context.Customers, "CustomerID", "FullName", incident.CustomerID);
-            ViewBag.Products = new SelectList(context.Products, "ProductID", "Name", incident.ProductID);
-            ViewBag.Technicians = new SelectList(context.Technicians, "TechnicianID", "Name", incident.TechnicianID);
+            var viewModel = new IncidentEditViewModel
+            {
+                Customers = context.Customers.ToList(),
+                Products = context.Products.ToList(),
+                Technicians = context.Technicians.ToList(),
+                CurrentIncident = incident,
+                OperationType = "Edit"
+            };
 
-            ViewBag.Action = "Edit";
-
-            return View("AddEdit", incident); // Same site as the Add button, but with data filled in
+            return View("AddEdit", viewModel); // Uses ViewModel
         }
 
         [HttpPost]
-        public IActionResult Edit(Incident incident)
+        public IActionResult Edit(IncidentEditViewModel viewModel)
         {
-            // If all input is correct
             if (ModelState.IsValid)
             {
-                // Update the incident
-                context.Incidents.Update(incident);
+                context.Incidents.Update(viewModel.CurrentIncident);
                 context.SaveChanges();
-                return RedirectToAction("List"); // Takes user to the list page
+                return RedirectToAction("List");
             }
 
-            // Load the dropdowns again if input is invalid
-            ViewBag.Customers = new SelectList(context.Customers, "CustomerID", "FullName", incident.CustomerID);
-            ViewBag.Products = new SelectList(context.Products, "ProductID", "Name", incident.ProductID);
-            ViewBag.Technicians = new SelectList(context.Technicians, "TechnicianID", "Name", incident.TechnicianID);
+            // Reload dropdowns if invalid
+            viewModel.Customers = context.Customers.ToList();
+            viewModel.Products = context.Products.ToList();
+            viewModel.Technicians = context.Technicians.ToList();
+            viewModel.OperationType = "Edit";
 
-            ViewBag.Action = "Edit";
-
-            return View("AddEdit", incident); // Reload the site if input is invalid
+            return View("AddEdit", viewModel);
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            // Loads the incident that needs to be deleted
-            Incident incident = context.Incidents
-                .FirstOrDefault(i => i.IncidentID == id);
+            Incident incident = context.Incidents.FirstOrDefault(i => i.IncidentID == id);
             return View(incident);
         }
 
         [HttpPost]
         public IActionResult Delete(Incident incident)
         {
-            // Deletes the incident
             context.Incidents.Remove(incident);
             context.SaveChanges();
-            // Takes user back to the List page
             return RedirectToAction("List");
         }
     }
 }
-
