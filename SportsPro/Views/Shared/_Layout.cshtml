@@ -39,6 +39,17 @@
             </nav>
         </nav>
     </header>
+    @if (TempData.Keys.Contains("message"))
+    {
+        <h4 class="bg-info text-center text-white p-2">
+            @TempData["message"]
+        </h4>
+    } else if (TempData.Keys.Contains("delete"))
+    {
+        <h4 class="bg-info text-center text-white p-2">
+            @TempData["delete"]
+        </h4>
+    }
     <div class="container">
         <main role="main" class="pb-5">
             @RenderBody()

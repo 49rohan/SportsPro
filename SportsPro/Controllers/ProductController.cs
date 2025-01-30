@@ -46,6 +46,7 @@ namespace SportsPro.Controllers
                     _context.Products.Update(product);
                 }
                 _context.SaveChanges();
+                TempData["message"] = $"{product.Name} was added";
                 return RedirectToAction("List");
             }
             ViewBag.Action = (product.ProductID == 0) ? "Add" : "Edit";
@@ -64,7 +65,27 @@ namespace SportsPro.Controllers
         {
             _context.Products.Remove(product);
             _context.SaveChanges();
+            TempData["delete"] = $"{product.Name} was deleted";
             return RedirectToAction("List", "Product");
         }
+
+        //[HttpPost]
+        //public IActionResult Delete(int id)
+        //{
+        //    var product = _context.Products.Find(id);
+
+        //    if (product == null)
+        //    {
+        //        TempData["delete"] = "Product not found!";
+        //        return RedirectToAction("List", "Product");
+        //    }
+
+        //    _context.Products.Remove(product);
+        //    _context.SaveChanges();
+
+        //    TempData["delete"] = $"{product.Name} was deleted";
+        //    return RedirectToAction("List", "Product");
+        //}
+
     }
 }
