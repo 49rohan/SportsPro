@@ -4,6 +4,7 @@
     ViewData["Title"] = "Technician Manager";
 }
 
+
 <h1>Technician Manager</h1>
 
 <p>
@@ -34,3 +35,38 @@
         }
     </tbody>
 </table>
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-sm-10">
+        <p>
+            <a asp-action="Add" class="btn btn-primary">Add Technician</a>
+        </p>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Email</td>
+                        <td>@item.Phone</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.TechnicianID" class="btn btn-sm btn-primary">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@item.TechnicianID" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

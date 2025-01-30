@@ -17,26 +17,24 @@ namespace SportsPro.Controllers
             _context = context;
         }
 
-       
+        [Route("/customers")]
         public IActionResult List()
         {
-            var customers = _context.Customers.ToList(); 
+            var customers = _context.Customers.ToList();
             return View(customers);
         }
 
         [HttpGet]
-        public IActionResult AddEdit(int? id) // Use nullable int for id
+        public IActionResult AddEdit(int? id)
         {
             ViewBag.Countries = GetCountriesList();
 
             if (id == null)
             {
-                // Add operation
                 return View(new Customer());
             }
             else
             {
-                // Edit operation
                 var customer = _context.Customers.Find(id);
                 if (customer == null)
                 {
@@ -51,11 +49,19 @@ namespace SportsPro.Controllers
         {
             if (ModelState.IsValid)
             {
+
                 if (customer.CustomerID == 0) 
                 {
                     _context.Customers.Add(customer);
                 }
                 else 
+
+                if (customer.CustomerID == 0)
+                {
+                    _context.Customers.Add(customer);
+                }
+                else
+
                 {
                     _context.Attach(customer);
                     _context.Entry(customer).State = EntityState.Modified;
@@ -69,7 +75,6 @@ namespace SportsPro.Controllers
             return View(customer);
         }
 
-
         private List<SelectListItem> GetCountriesList()
         {
             return _context.Countries
@@ -81,8 +86,6 @@ namespace SportsPro.Controllers
                 .ToList();
         }
 
-
-       
         [HttpGet]
         public IActionResult Delete(int id)
         {
@@ -93,7 +96,6 @@ namespace SportsPro.Controllers
             }
             return View(customer);
         }
-
 
         [HttpPost]
         public IActionResult DeleteConfirmed(int id)
@@ -106,7 +108,5 @@ namespace SportsPro.Controllers
             }
             return RedirectToAction("List");
         }
-
-
     }
 }
