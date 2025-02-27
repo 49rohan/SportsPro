@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsPro.Models;
 
@@ -11,9 +12,11 @@ using SportsPro.Models;
 namespace SportsPro.Migrations
 {
     [DbContext(typeof(SportsProContext))]
-    partial class SportsProContextModelSnapshot : ModelSnapshot
+    [Migration("20250227164351_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -404,10 +407,6 @@ namespace SportsPro.Migrations
                     b.Property<int>("ProductID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("TechnicianID")
                         .HasColumnType("int");
 
@@ -434,7 +433,6 @@ namespace SportsPro.Migrations
                             DateOpened = new DateTime(2020, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Media appears to be bad.",
                             ProductID = 1,
-                            Status = "Open",
                             TechnicianID = 11,
                             Title = "Could not install"
                         },
@@ -445,7 +443,6 @@ namespace SportsPro.Migrations
                             DateOpened = new DateTime(2020, 1, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Received error message 415 while trying to import data from previous version.",
                             ProductID = 4,
-                            Status = "Open",
                             TechnicianID = 14,
                             Title = "Error importing data"
                         },
@@ -457,7 +454,6 @@ namespace SportsPro.Migrations
                             DateOpened = new DateTime(2020, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Setup failed with code 104.",
                             ProductID = 6,
-                            Status = "Open",
                             TechnicianID = 15,
                             Title = "Could not install"
                         },
@@ -468,7 +464,6 @@ namespace SportsPro.Migrations
                             DateOpened = new DateTime(2020, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Program fails with error code 510, unable to open database.",
                             ProductID = 3,
-                            Status = "Open",
                             Title = "Error launching program"
                         });
                 });
