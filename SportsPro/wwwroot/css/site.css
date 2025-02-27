@@ -18,6 +18,16 @@ html {
   min-height: 100%;
 }
 
+.input-validation-error {
+    border-color: #dc3545;
+    background-color: #fdf2f2;
+}
+
+.field-validation-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+}
+
 body {
   /* Margin bottom by footer height */
   margin-bottom: 40px;

@@ -1,4 +1,4 @@
-﻿@model List<Incident>
+﻿@model SportsPro.Models.ViewModels.IncidentManagerViewModel
 
 @{
     ViewData["Title"] = "Incident Manager";
@@ -32,7 +32,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var incident in Model)
+                @foreach (var incident in Model.Incidents)
                 {
                     <tr>
                         <td>@incident.Title</td>
@@ -49,6 +49,6 @@
                 }
             </tbody>
         </table>
-        <a asp-action="Add" class="btn btn-primary">Add Incident</a>
+        <a asp-controller="Incident" asp-action="Add" class="btn btn-primary">Add Incident</a>
     </div>
 </div>

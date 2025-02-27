@@ -13,6 +13,7 @@ namespace SportsPro.Controllers
             context = ctx;
         }
 
+        [Route("/technicians")]
         public IActionResult List()
         {
             var technicians = context.Technicians.OrderBy(t => t.Name).ToList();
@@ -44,6 +45,8 @@ namespace SportsPro.Controllers
                     context.Technicians.Update(technician);
                 context.SaveChanges();
                 return RedirectToAction("Index");
+
+                return RedirectToAction("List");
             }
             return View(technician);
         }
@@ -64,3 +67,10 @@ namespace SportsPro.Controllers
         }
     }
 }
+            return RedirectToAction("List");
+        }
+
+
+    }
+}
+

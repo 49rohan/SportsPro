@@ -1,17 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace SportsPro.Controllers
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    [Route("/")]
+    public IActionResult Index()
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        return View();
+    }
 
-        public IActionResult About()
-        {
-            return View();
-        }
+    [Route("/about")]
+    public IActionResult About()
+    {
+        return View();
     }
 }
