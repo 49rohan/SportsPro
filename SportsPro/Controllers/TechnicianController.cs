@@ -31,6 +31,10 @@ namespace SportsPro.Controllers
         public IActionResult Edit(int id)
         {
             var technician = context.Technicians.Find(id);
+            if (technician == null)
+            {
+                return RedirectToAction("List"); 
+            }
             return View(technician);
         }
 
@@ -43,10 +47,9 @@ namespace SportsPro.Controllers
                     context.Technicians.Add(technician);
                 else
                     context.Technicians.Update(technician);
-                context.SaveChanges();
-                return RedirectToAction("Index");
 
-                return RedirectToAction("List");
+                context.SaveChanges();
+                return RedirectToAction("List"); 
             }
             return View(technician);
         }
@@ -55,22 +58,27 @@ namespace SportsPro.Controllers
         public IActionResult Delete(int id)
         {
             var technician = context.Technicians.Find(id);
+            if (technician == null)
+            {
+                return RedirectToAction("List"); 
+            }
             return View(technician);
         }
 
         [HttpPost]
         public IActionResult Delete(Technician technician)
         {
+            bool hasIncidents = context.Incidents.Any(i => i.TechnicianID == technician.TechnicianID);
+
+            if (hasIncidents)
+            {
+                TempData["ErrorMessage"] = "This technician cannot be deleted because they are assigned to incidents.";
+                return RedirectToAction("List");
+            }
+
             context.Technicians.Remove(technician);
             context.SaveChanges();
-            return RedirectToAction("Index");
-        }
-    }
-}
             return RedirectToAction("List");
         }
-
-
     }
 }
-

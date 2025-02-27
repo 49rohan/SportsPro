@@ -20,15 +20,23 @@ namespace SportsPro.Controllers
         //  List all incidents (Incident Manager View)
         public IActionResult List(string filter = "All")
         {
-            var incidents = context.Incidents
+            IQueryable<Incident> incidents = context.Incidents
                 .Include(i => i.Customer)
                 .Include(i => i.Product)
-                .OrderBy(i => i.Title)
-                .ToList();
+                .Include(i => i.Technician);
+
+            if (filter == "unassigned")
+            {
+                incidents = incidents.Where(i => i.TechnicianID == -1);
+            }
+            else if (filter == "open")
+            {
+                incidents = incidents.Where(i => i.DateClosed == null);
+            }
 
             var viewModel = new IncidentManagerViewModel
             {
-                Incidents = incidents,
+                Incidents = incidents.OrderBy(i => i.Title).ToList(),
                 FilterType = filter
             };
 
@@ -226,30 +234,7 @@ namespace SportsPro.Controllers
             context.SaveChanges();
             return RedirectToAction("List");
         }
-        [HttpGet("Incident/List/{filter?}")]
-        public IActionResult List(string filter = "all")  
-        {
-            IQueryable<Incident> incidents = context.Incidents
-                .Include(i => i.Customer)
-                .Include(i => i.Product)
-                .Include(i => i.Technician);
-
-            if (filter == "unassigned")
-            {
-                incidents = incidents.Where(i => i.TechnicianID == -1);
-            }
-            else if (filter == "open")
-            {
-                incidents = incidents.Where(i => i.DateClosed == null);
-            }
-
-            var orderedIncidents = incidents.OrderBy(i => i.Title).ToList();
-
-            ViewBag.Filter = filter;  
-
-            return View(orderedIncidents);
-        }
-
+        
 
     }
 }
