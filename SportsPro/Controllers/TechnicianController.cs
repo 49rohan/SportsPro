@@ -44,6 +44,8 @@ namespace SportsPro.Controllers
                 else
                     context.Technicians.Update(technician);
                 context.SaveChanges();
+                return RedirectToAction("Index");
+
                 return RedirectToAction("List");
             }
             return View(technician);
@@ -61,9 +63,14 @@ namespace SportsPro.Controllers
         {
             context.Technicians.Remove(technician);
             context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+    }
+}
             return RedirectToAction("List");
         }
 
 
     }
 }
+

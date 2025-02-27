@@ -226,5 +226,30 @@ namespace SportsPro.Controllers
             context.SaveChanges();
             return RedirectToAction("List");
         }
+        [HttpGet("Incident/List/{filter?}")]
+        public IActionResult List(string filter = "all")  
+        {
+            IQueryable<Incident> incidents = context.Incidents
+                .Include(i => i.Customer)
+                .Include(i => i.Product)
+                .Include(i => i.Technician);
+
+            if (filter == "unassigned")
+            {
+                incidents = incidents.Where(i => i.TechnicianID == -1);
+            }
+            else if (filter == "open")
+            {
+                incidents = incidents.Where(i => i.DateClosed == null);
+            }
+
+            var orderedIncidents = incidents.OrderBy(i => i.Title).ToList();
+
+            ViewBag.Filter = filter;  
+
+            return View(orderedIncidents);
+        }
+
+
     }
 }
