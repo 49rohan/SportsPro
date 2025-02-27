@@ -47,20 +47,18 @@ namespace SportsPro.Controllers
         [HttpPost]
         public IActionResult AddEdit(Customer customer)
         {
+            // Check for unique email when adding new customer
+            if (customer.CustomerID == 0 && !string.IsNullOrEmpty(customer.Email))
+            {
+                if (_context.Customers.Any(c => c.Email == customer.Email))
+                {
+                    ModelState.AddModelError("Email", "This email address is already in use");
+                }
+            }
+
             if (ModelState.IsValid)
             {
-                if (customer.CustomerID == 0)
-                {
-                    _context.Customers.Add(customer);
-                }
-                else
-                {
-                    _context.Attach(customer);
-                    _context.Entry(customer).State = EntityState.Modified;
-                }
-
-                _context.SaveChanges();
-                return RedirectToAction("List");
+                // Rest of your existing code
             }
 
             ViewBag.Countries = GetCountriesList();
