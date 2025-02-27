@@ -1,0 +1,63 @@
+﻿@model SportsPro.Models.Incident
+
+@{
+    ViewBag.Title = "Edit Incident";
+}
+
+<h2>Edit Incident</h2>
+
+<form asp-controller="Incident" asp-action="EditForTechnician" method="post">
+   
+    <input type="hidden" asp-for="IncidentID" />
+    <input type="hidden" asp-for="TechnicianID" />
+    <input type="hidden" asp-for="CustomerID" />
+    <input type="hidden" asp-for="ProductID" />
+    <input type="hidden" asp-for="Title" />
+    <input type="hidden" asp-for="Status" />
+
+    <div class="mb-3">
+        <label class="form-label">Technician:</label>
+        <span>@Model.Technician?.Name</span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Customer:</label>
+        <span>
+            @(Model.Customer != null
+                ? Model.Customer.FirstName + " " + Model.Customer.LastName
+                : "Unknown Customer")
+        </span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Product:</label>
+        <span>
+            @(Model.Product != null
+                ? Model.Product.Name
+                : "Unknown Product")
+        </span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Title:</label>
+        <span>@Model.Title</span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Date Opened:</label>
+        <span>@Model.DateOpened.ToString("MM/dd/yyyy")</span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Description:</label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Date Closed:</label>
+        <input type="date" asp-for="DateClosed" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="IncidentsByTechnician" asp-route-id="@ViewBag.TechnicianID" class="btn btn-secondary">Cancel</a>
+</form>

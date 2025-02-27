@@ -63,5 +63,7 @@ namespace SportsPro.Controllers
             context.SaveChanges();
             return RedirectToAction("List");
         }
+
+
     }
 }
