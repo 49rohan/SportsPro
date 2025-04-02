@@ -59,7 +59,7 @@ namespace SportsPro.Controllers
                 return RedirectToAction("ListByTech");
             }
 
-           
+
             HttpContext.Session.SetInt32("TechnicianID", technicianId.Value);
 
             return RedirectToAction("IncidentsByTechnician", new { id = technicianId });
@@ -236,5 +236,3 @@ namespace SportsPro.Controllers
         }
         
 
-    }
-}
