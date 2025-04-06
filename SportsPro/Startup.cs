@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using SportsPro.Models;
+using SportsPro.Models.Data;
 
 namespace SportsPro
 {
@@ -21,6 +22,8 @@ namespace SportsPro
         {
             services.AddControllersWithViews();
             services.AddSession();
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
 
             services.AddDbContext<SportsProContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("SportsPro")));

@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using SportsPro.Models;
-using System;
+using SportsPro.Models.Data;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,17 +9,19 @@ namespace SportsPro.Controllers
 {
     public class CustomerController : Controller
     {
-        private readonly SportsProContext _context;
+        private readonly IRepository<Customer> customerRepo;
+        private readonly IRepository<Country> countryRepo;
 
-        public CustomerController(SportsProContext context)
+        public CustomerController(IRepository<Customer> cRepo, IRepository<Country> coRepo)
         {
-            _context = context;
+            customerRepo = cRepo;
+            countryRepo = coRepo;
         }
 
         [Route("/customers")]
         public IActionResult List()
         {
-            var customers = _context.Customers.ToList();
+            var customers = customerRepo.List(new QueryOptions<Customer> { OrderBy = c => c.LastName }).ToList();
             return View(customers);
         }
 
@@ -30,27 +31,18 @@ namespace SportsPro.Controllers
             ViewBag.Countries = GetCountriesList();
 
             if (id == null)
-            {
                 return View(new Customer());
-            }
-            else
-            {
-                var customer = _context.Customers.Find(id);
-                if (customer == null)
-                {
-                    return NotFound();
-                }
-                return View(customer);
-            }
+
+            var customer = customerRepo.Get(id.Value);
+            return customer == null ? NotFound() : View(customer);
         }
 
         [HttpPost]
         public IActionResult AddEdit(Customer customer)
         {
-            // Check for unique email when adding new customer
             if (customer.CustomerID == 0 && !string.IsNullOrEmpty(customer.Email))
             {
-                if (_context.Customers.Any(c => c.Email == customer.Email))
+                if (customerRepo.List(new QueryOptions<Customer> { Where = c => c.Email == customer.Email }).Any())
                 {
                     ModelState.AddModelError("Email", "This email address is already in use");
                 }
@@ -58,7 +50,13 @@ namespace SportsPro.Controllers
 
             if (ModelState.IsValid)
             {
-                // Rest of your existing code
+                if (customer.CustomerID == 0)
+                    customerRepo.Insert(customer);
+                else
+                    customerRepo.Update(customer);
+
+                customerRepo.Save();
+                return RedirectToAction("List");
             }
 
             ViewBag.Countries = GetCountriesList();
@@ -67,10 +65,10 @@ namespace SportsPro.Controllers
 
         private List<SelectListItem> GetCountriesList()
         {
-            return _context.Countries
+            return countryRepo.List(new QueryOptions<Country> { OrderBy = c => c.Name })
                 .Select(c => new SelectListItem
                 {
-                    Value = c.CountryID.ToString(),
+                    Value = c.CountryID,
                     Text = c.Name
                 })
                 .ToList();
@@ -79,22 +77,18 @@ namespace SportsPro.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var customer = _context.Customers.Find(id);
-            if (customer == null)
-            {
-                return NotFound();
-            }
-            return View(customer);
+            var customer = customerRepo.Get(id);
+            return customer == null ? NotFound() : View(customer);
         }
 
         [HttpPost]
         public IActionResult DeleteConfirmed(int id)
         {
-            var customer = _context.Customers.Find(id);
+            var customer = customerRepo.Get(id);
             if (customer != null)
             {
-                _context.Customers.Remove(customer);
-                _context.SaveChanges();
+                customerRepo.Delete(customer);
+                customerRepo.Save();
             }
             return RedirectToAction("List");
         }
