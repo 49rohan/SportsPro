@@ -1,31 +1,30 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using SportsPro.Models;
+using SportsPro.Models.Data;
+using System.Linq;
 
 namespace SportsPro.Controllers
 {
     public class ProductController : Controller
     {
-        private SportsProContext _context;
+        private readonly IRepository<Product> productRepo;
 
-        public ProductController(SportsProContext context)
+        public ProductController(IRepository<Product> repo)
         {
-            _context = context;
+            productRepo = repo;
         }
 
         [Route("/products")]
         public IActionResult List()
         {
-            var products = _context.Products.ToList();
+            var products = productRepo.List(new QueryOptions<Product> { OrderBy = p => p.Name }).ToList();
             return View(products);
         }
 
         [HttpGet]
         public IActionResult AddEdit(int? id)
         {
-            var product = id == null ? new Product() : _context.Products.Find(id);
+            var product = id == null ? new Product() : productRepo.Get(id.Value);
             ViewBag.Action = id == null ? "Add" : "Edit";
             return View(product);
         }
@@ -36,17 +35,15 @@ namespace SportsPro.Controllers
             if (ModelState.IsValid)
             {
                 if (product.ProductID == 0)
-                {
-                    _context.Products.Add(product);
-                }
+                    productRepo.Insert(product);
                 else
-                {
-                    _context.Products.Update(product);
-                }
-                _context.SaveChanges();
-                TempData["message"] = $"{product.Name} was added";
+                    productRepo.Update(product);
+
+                productRepo.Save();
+                TempData["message"] = $"{product.Name} was saved";
                 return RedirectToAction("List");
             }
+
             ViewBag.Action = (product.ProductID == 0) ? "Add" : "Edit";
             return View(product);
         }
@@ -54,36 +51,17 @@ namespace SportsPro.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var product = _context.Products.Find(id);
+            var product = productRepo.Get(id);
             return View(product);
         }
 
         [HttpPost]
         public IActionResult Delete(Product product)
         {
-            _context.Products.Remove(product);
-            _context.SaveChanges();
+            productRepo.Delete(product);
+            productRepo.Save();
             TempData["delete"] = $"{product.Name} was deleted";
-            return RedirectToAction("List", "Product");
+            return RedirectToAction("List");
         }
-
-        //[HttpPost]
-        //public IActionResult Delete(int id)
-        //{
-        //    var product = _context.Products.Find(id);
-
-        //    if (product == null)
-        //    {
-        //        TempData["delete"] = "Product not found!";
-        //        return RedirectToAction("List", "Product");
-        //    }
-
-        //    _context.Products.Remove(product);
-        //    _context.SaveChanges();
-
-        //    TempData["delete"] = $"{product.Name} was deleted";
-        //    return RedirectToAction("List", "Product");
-        //}
-
     }
 }
