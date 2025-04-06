@@ -1,6 +1,11 @@
+
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+
+
+using SportsPro.Models.Data.Configuration;
+
 
 namespace SportsPro.Models
 {
@@ -19,6 +24,7 @@ namespace SportsPro.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<Registration>()
                 .HasKey(r => r.RegistrationId);
 
@@ -313,6 +319,17 @@ namespace SportsPro.Models
                     DateClosed = null
                 }
             );
+        }
+    }
+}
+
+
+            // Apply all configuration classes
+            modelBuilder.ApplyConfiguration(new ProductConfig());
+            modelBuilder.ApplyConfiguration(new TechnicianConfig());
+            modelBuilder.ApplyConfiguration(new CountryConfig());
+            modelBuilder.ApplyConfiguration(new CustomerConfig());
+            modelBuilder.ApplyConfiguration(new IncidentConfig());
         }
     }
 }

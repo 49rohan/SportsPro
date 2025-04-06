@@ -1,37 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SportsPro.Models;
+using SportsPro.Models.Data;
 using System.Linq;
 
 namespace SportsPro.Controllers
 {
     public class TechnicianController : Controller
     {
-        private SportsProContext context;
+        private readonly IRepository<Technician> techRepo;
+        private readonly IRepository<Incident> incidentRepo;
 
-        public TechnicianController(SportsProContext ctx)
+        public TechnicianController(IRepository<Technician> repo, IRepository<Incident> incidentR)
         {
-            context = ctx;
+            techRepo = repo;
+            incidentRepo = incidentR;
         }
 
         [Route("/technicians")]
         public IActionResult List()
         {
-            var technicians = context.Technicians.OrderBy(t => t.Name).ToList();
+            var technicians = techRepo.List(new QueryOptions<Technician> { OrderBy = t => t.Name }).ToList();
             return View(technicians);
         }
 
         [HttpGet]
         public IActionResult Add()
         {
-            var technician = new Technician();
-            return View("Edit", technician);
+            return View("Edit", new Technician());
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var technician = context.Technicians.Find(id);
-            return View(technician);
+            var technician = techRepo.Get(id);
+            return technician == null ? RedirectToAction("List") : View(technician);
         }
 
         [HttpPost]
@@ -40,10 +42,11 @@ namespace SportsPro.Controllers
             if (ModelState.IsValid)
             {
                 if (technician.TechnicianID == 0)
-                    context.Technicians.Add(technician);
+                    techRepo.Insert(technician);
                 else
-                    context.Technicians.Update(technician);
-                context.SaveChanges();
+                    techRepo.Update(technician);
+
+                techRepo.Save();
                 return RedirectToAction("List");
             }
             return View(technician);
@@ -52,15 +55,26 @@ namespace SportsPro.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var technician = context.Technicians.Find(id);
-            return View(technician);
+            var technician = techRepo.Get(id);
+            return technician == null ? RedirectToAction("List") : View(technician);
         }
 
         [HttpPost]
         public IActionResult Delete(Technician technician)
         {
-            context.Technicians.Remove(technician);
-            context.SaveChanges();
+            var hasIncidents = incidentRepo.List(new QueryOptions<Incident>
+            {
+                Where = i => i.TechnicianID == technician.TechnicianID
+            }).Any();
+
+            if (hasIncidents)
+            {
+                TempData["ErrorMessage"] = "This technician cannot be deleted because they are assigned to incidents.";
+                return RedirectToAction("List");
+            }
+
+            techRepo.Delete(technician);
+            techRepo.Save();
             return RedirectToAction("List");
         }
     }

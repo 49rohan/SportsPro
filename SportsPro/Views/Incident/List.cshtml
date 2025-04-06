@@ -1,6 +1,22 @@
-﻿@model List<Incident>
+﻿@model SportsPro.Models.ViewModels.IncidentManagerViewModel
+
+@{
+    ViewData["Title"] = "Incident Manager";
+}
 
 <h1>@ViewBag.Title</h1>
+
+<ul class="nav nav-pills">
+    <li class="nav-item">
+        <a class="nav-link @(ViewBag.Filter == "all" ? "active" : "")" asp-action="List" asp-route-filter="all">All Incidents</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewBag.Filter == "unassigned" ? "active" : "")" asp-action="List" asp-route-filter="unassigned">Unassigned Incidents</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewBag.Filter == "open" ? "active" : "")" asp-action="List" asp-route-filter="open">Open Incidents</a>
+    </li>
+</ul>
 
 <div class="row">
     <div class="col-sm-10">
@@ -16,7 +32,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var incident in Model)
+                @foreach (var incident in Model.Incidents)
                 {
                     <tr>
                         <td>@incident.Title</td>

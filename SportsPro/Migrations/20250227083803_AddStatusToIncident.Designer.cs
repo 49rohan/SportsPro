@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsPro.Models;
 
@@ -11,13 +12,15 @@ using SportsPro.Models;
 namespace SportsPro.Migrations
 {
     [DbContext(typeof(SportsProContext))]
-    partial class SportsProContextModelSnapshot : ModelSnapshot
+    [Migration("20250227083803_AddStatusToIncident")]
+    partial class AddStatusToIncident
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -558,29 +561,6 @@ namespace SportsPro.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SportsPro.Models.Registration", b =>
-                {
-                    b.Property<int>("RegistrationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RegistrationId"));
-
-                    b.Property<int>("CustomerID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductID")
-                        .HasColumnType("int");
-
-                    b.HasKey("RegistrationId");
-
-                    b.HasIndex("CustomerID");
-
-                    b.HasIndex("ProductID");
-
-                    b.ToTable("Registrations");
-                });
-
             modelBuilder.Entity("SportsPro.Models.Technician", b =>
                 {
                     b.Property<int>("TechnicianID")
@@ -677,35 +657,6 @@ namespace SportsPro.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Technician");
-                });
-
-            modelBuilder.Entity("SportsPro.Models.Registration", b =>
-                {
-                    b.HasOne("SportsPro.Models.Customer", "Customer")
-                        .WithMany("Registrations")
-                        .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SportsPro.Models.Product", "Product")
-                        .WithMany("Registrations")
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("SportsPro.Models.Customer", b =>
-                {
-                    b.Navigation("Registrations");
-                });
-
-            modelBuilder.Entity("SportsPro.Models.Product", b =>
-                {
-                    b.Navigation("Registrations");
                 });
 #pragma warning restore 612, 618
         }

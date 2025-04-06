@@ -38,9 +38,9 @@ namespace SportsPro.Models
         public string CountryID { get; set; }
         public Country Country { get; set; }
 
-        [RegularExpression(@"^\(\d{3}\) \d{3}-\d{4}$", ErrorMessage = "Phone must be in format (999) 999-9999")]
-        [StringLength(20)]
+        [RegularExpression(@"\(\d{3}\)[ ]?\d{3}-\d{4}", ErrorMessage = "Phone must be in format (999) 999-9999")]
         public string Phone { get; set; }
+
 
         [DataType(DataType.EmailAddress)]
         [StringLength(50, ErrorMessage = "Email must be less than 51 characters")]
