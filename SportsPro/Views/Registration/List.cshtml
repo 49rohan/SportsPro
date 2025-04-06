@@ -1,0 +1,68 @@
+﻿@model Customer
+@{
+    ViewBag.Title = "Customer Registrations";
+}
+
+<h2>Customer: @Model.FirstName @Model.LastName Registrations</h2>
+
+@if (TempData["message"] != null)
+{
+    <div class="alert alert-info">@TempData["message"]</div>
+}
+
+@if (Model.Registrations == null || Model.Registrations.Count == 0)
+{
+    <p>No products are registered for this customer.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Code</th>
+                <th>Price</th>
+                <th>Release Date</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var registration in Model.Registrations)
+            {
+                <tr>
+                    <td>@registration.Product.Name</td>
+                    <td>@registration.Product.ProductCode</td>
+                    <td>@registration.Product.YearlyPrice.ToString("c")</td>
+                    <td>@registration.Product.ReleaseDate.ToShortDateString()</td>
+                    <td>
+                        <a asp-action="Delete" asp-route-id="@registration.RegistrationId"
+                           class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<h3>Product:</h3>
+<form asp-action="Register" method="post">
+    <input type="hidden" name="CustomerID" value="@Model.CustomerID" />
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="form-group">
+                <select name="ProductID" class="form-control">
+                    <option value="">Select a product</option>
+                    @foreach (var product in ViewBag.Products)
+                    {
+                        <option value="@product.ProductID">@product.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Register</button>
+        </div>
+    </div>
+</form>
+
+<a asp-action="Index" class="btn btn-primary">Select Different Customer</a>

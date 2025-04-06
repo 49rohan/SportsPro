@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsPro.Models;
 
@@ -11,9 +12,11 @@ using SportsPro.Models;
 namespace SportsPro.Migrations
 {
     [DbContext(typeof(SportsProContext))]
-    partial class SportsProContextModelSnapshot : ModelSnapshot
+    [Migration("20250406062214_AddRegistrationsTable")]
+    partial class AddRegistrationsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,37 +251,45 @@ namespace SportsPro.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("CountryID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("State")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("CustomerID");
 
@@ -404,6 +415,10 @@ namespace SportsPro.Migrations
                     b.Property<int>("ProductID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("TechnicianID")
                         .HasColumnType("int");
 
@@ -430,6 +445,7 @@ namespace SportsPro.Migrations
                             DateOpened = new DateTime(2020, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Media appears to be bad.",
                             ProductID = 1,
+                            Status = "Open",
                             TechnicianID = 11,
                             Title = "Could not install"
                         },
@@ -440,6 +456,7 @@ namespace SportsPro.Migrations
                             DateOpened = new DateTime(2020, 1, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Received error message 415 while trying to import data from previous version.",
                             ProductID = 4,
+                            Status = "Open",
                             TechnicianID = 14,
                             Title = "Error importing data"
                         },
@@ -451,6 +468,7 @@ namespace SportsPro.Migrations
                             DateOpened = new DateTime(2020, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Setup failed with code 104.",
                             ProductID = 6,
+                            Status = "Open",
                             TechnicianID = 15,
                             Title = "Could not install"
                         },
@@ -461,6 +479,7 @@ namespace SportsPro.Migrations
                             DateOpened = new DateTime(2020, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Program fails with error code 510, unable to open database.",
                             ProductID = 3,
+                            Status = "Open",
                             Title = "Error launching program"
                         });
                 });

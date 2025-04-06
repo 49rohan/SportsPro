@@ -1,10 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SportsPro.Models
 {
+
     public class Customer
     {
         public int CustomerID { get; set; }
+        // Add this property to your existing Customer class
+        public ICollection<Registration> Registrations { get; set; } = new List<Registration>();
 
         [Required(ErrorMessage = "First Name is required")]
         [StringLength(50, MinimumLength = 1, ErrorMessage = "First Name must be between 1 and 50 characters")]
@@ -43,5 +47,9 @@ namespace SportsPro.Models
         public string Email { get; set; }
 
         public string FullName => FirstName + " " + LastName;
-    }
+
+        // Add this property to your existing Customer class
+        
+
+        }
 }

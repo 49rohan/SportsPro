@@ -5,11 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SportsPro.Models
 {
-    public class Product
-    {
+	public class Product
+	{
 		public int ProductID { get; set; }
 
-		[Required]
+        // Add this property to your existing Customer class
+        public ICollection<Registration> Registrations { get; set; } = new List<Registration>();
+
+        [Required]
 		public string ProductCode { get; set; }
 
 		[Required]
@@ -20,5 +23,6 @@ namespace SportsPro.Models
 		public decimal YearlyPrice { get; set; }
 
 		public DateTime ReleaseDate { get; set; } = DateTime.Now;
+
 	}
 }

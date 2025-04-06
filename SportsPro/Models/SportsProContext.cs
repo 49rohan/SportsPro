@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
 namespace SportsPro.Models
@@ -14,9 +15,24 @@ namespace SportsPro.Models
         public DbSet<Country> Countries { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Incident> Incidents { get; set; }
+        public DbSet<Registration> Registrations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Registration>()
+                .HasKey(r => r.RegistrationId);
+
+            modelBuilder.Entity<Registration>()
+                .HasOne(r => r.Customer)
+                .WithMany(c => c.Registrations)
+                .HasForeignKey(r => r.CustomerID);
+
+            modelBuilder.Entity<Registration>()
+                .HasOne(r => r.Product)
+                .WithMany(p => p.Registrations)
+                .HasForeignKey(r => r.ProductID);
+
+            // Existing seed data
             modelBuilder.Entity<Product>().HasData(
                 new Product
                 {
@@ -251,7 +267,6 @@ namespace SportsPro.Models
                 }
             );
 
-
             modelBuilder.Entity<Incident>().HasData(
                 new Incident
                 {
@@ -281,7 +296,7 @@ namespace SportsPro.Models
                     CustomerID = 1015,
                     ProductID = 6,
                     TechnicianID = 15,
-                    Title = "Could not install",                    
+                    Title = "Could not install",
                     Description = "Setup failed with code 104.",
                     DateOpened = DateTime.Parse("2020-01-08"),
                     DateClosed = DateTime.Parse("2020-01-10")
@@ -292,7 +307,7 @@ namespace SportsPro.Models
                     CustomerID = 1010,
                     ProductID = 3,
                     TechnicianID = null,
-                    Title = "Error launching program",                    
+                    Title = "Error launching program",
                     Description = "Program fails with error code 510, unable to open database.",
                     DateOpened = DateTime.Parse("2020-01-10"),
                     DateClosed = null
@@ -301,3 +316,4 @@ namespace SportsPro.Models
         }
     }
 }
+

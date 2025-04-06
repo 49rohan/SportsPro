@@ -1,0 +1,19 @@
+﻿@model SportsPro.Models.Registration
+@{
+    ViewBag.Title = "Delete Registration";
+}
+
+<h2>Confirm Deletion</h2>
+
+<div class="alert alert-danger">
+    <p>Are you sure you want to delete the registration of product 
+       <strong>@Model.Product.Name</strong> for customer 
+       <strong>@Model.Customer.FirstName @Model.Customer.LastName</strong>?</p>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" name="id" value="@Model.RegistrationId" />
+    
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a asp-action="List" asp-route-customerID="@Model.CustomerID" class="btn btn-primary">Cancel</a>
+</form>
