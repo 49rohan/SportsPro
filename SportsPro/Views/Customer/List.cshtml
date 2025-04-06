@@ -1,62 +1,35 @@
-﻿@model Customer
+﻿@model List<SportsPro.Models.Customer>
+
+
 @{
     ViewBag.Title = "Customer Registrations";
 }
 
-<h2>Registrations for @Model.FirstName @Model.LastName</h2>
+<h2>All Customers</h2>
 
-@if (Model.Registrations?.Count() > 0)
-{
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Release Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var reg in Model.Registrations)
-            {
-                <tr>
-                    <td>@reg.Product.Name</td>
-                    <td>@reg.Product.YearlyPrice.ToString("c")</td>
-                    <td>@reg.Product.ReleaseDate.ToShortDateString()</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No products are registered for this customer.</p>
-}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Country</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var customer in Model)
+    {
+        <tr>
+            <td>@customer.FirstName @customer.LastName</td>
+            <td>@customer.Email</td>
+            <td>@customer.CountryID</td>
+            <td>
+                <a asp-controller="Customer" asp-action="AddEdit" asp-route-id="@customer.CustomerID" class="btn btn-sm btn-primary">Edit</a>
+                <a asp-controller="Customer" asp-action="Delete" asp-route-id="@customer.CustomerID" class="btn btn-sm btn-danger">Delete</a>
+                <a asp-controller="Registration" asp-action="List" asp-route-customerID="@customer.CustomerID" class="btn btn-sm btn-secondary">View Registrations</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
 
-<form asp-action="Register" method="post" class="mt-3">
-    <input type="hidden" name="CustomerID" value="@Model.CustomerID" />
-
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label>Product:</label>
-            <select name="ProductID" class="form-control">
-                <option value="0">Select a product...</option>
-                @foreach (Product p in ViewBag.Products)
-                {
-                    <option value="@p.ProductID">@p.Name</option>
-                }
-            </select>
-        </div>
-        <div class="form-group col-md-6 align-self-end">
-            <button type="submit" class="btn btn-primary">Register Product</button>
-        </div>
-    </div>
-</form>
-
-@if (TempData["message"] != null)
-{
-    <div class="alert alert-info mt-3">@TempData["message"]</div>
-}
-
-<div class="mt-3">
-    <a asp-action="Index" class="btn btn-primary">Select Different Customer</a>
-</div>

@@ -1,24 +1,26 @@
 ﻿@{
-    ViewBag.Title = "Product Registration";
+    ViewBag.Title = "Select a Customer";
 }
 
-<h2>Get Customer</h2>
+<h2>Select a Customer</h2>
 
 <form asp-action="List" method="post">
     <div class="form-group">
-        <select name="customerID" class="form-control">
-            <option value="0">Select a customer...</option>
-            @foreach (Customer c in ViewBag.Customers)
+        <label for="customerID">Customer</label>
+        <select class="form-control" name="customerID" required>
+            <option value="">-- Select Customer --</option>
+            @foreach (var customer in ViewBag.Customers)
             {
-                <option value="@c.CustomerID">@c.FirstName @c.LastName</option>
+                <option value="@customer.CustomerID">
+                    @customer.FirstName @customer.LastName
+                </option>
             }
         </select>
     </div>
-
-    <button type="submit" class="btn btn-primary">Select</button>
+    <button type="submit" class="btn btn-primary">View Registrations</button>
 </form>
 
 @if (TempData["message"] != null)
 {
-    <div class="alert alert-warning mt-3">@TempData["message"]</div>
+    <div class="alert alert-info mt-3">@TempData["message"]</div>
 }
