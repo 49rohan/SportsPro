@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using SportsPro.Models;
+using SportsPro.Models.DataAccess;
 
 namespace SportsPro
 {
@@ -25,10 +26,14 @@ namespace SportsPro
                 options.UseSqlServer(
                     Configuration.GetConnectionString("SportsPro")));
 
-            services.AddRouting(options => {
+            services.AddRouting(options =>
+            {
                 options.LowercaseUrls = true;
                 options.AppendTrailingSlash = true;
             });
+
+            // Register repository pattern services
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         }
 
         // Use this method to configure the HTTP request pipeline.
@@ -50,17 +55,18 @@ namespace SportsPro
 
             app.UseRouting();
 
+            // Ensure session is available before authorization
+            app.UseSession();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-
+                    pattern: "{controller=Home}/{action=Index}/{id?}"
+                );
             });
-
-
         }
     }
 }

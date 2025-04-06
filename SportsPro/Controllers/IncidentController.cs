@@ -2,40 +2,118 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SportsPro.Models;
-using System.ComponentModel.Design.Serialization;
+using SportsPro.Models.DataAccess;
+using SportsPro.Models.ViewModels;
 using System.Linq;
 
 namespace SportsPro.Controllers
 {
     public class IncidentController : Controller
     {
-        private SportsProContext context;
-        public IncidentController(SportsProContext context)
+        private readonly IRepository<Incident> _incidentRepo;
+        private readonly IRepository<Customer> _customerRepo;
+        private readonly IRepository<Product> _productRepo;
+        private readonly IRepository<Technician> _technicianRepo;
+
+        public IncidentController(
+            IRepository<Incident> incidentRepo,
+            IRepository<Customer> customerRepo,
+            IRepository<Product> productRepo,
+            IRepository<Technician> technicianRepo)
         {
-            this.context = context;
+            _incidentRepo = incidentRepo;
+            _customerRepo = customerRepo;
+            _productRepo = productRepo;
+            _technicianRepo = technicianRepo;
         }
 
-        // Gets the data from the database
-        public IActionResult List() 
+        public IActionResult List(string filter = "All")
         {
-            var incidents = context.Incidents.Include(i => i.Customer).Include(i => i.Product).OrderBy(i =>i.Title).ToList();
-            return View(incidents); // Passes the list to the view to display them
+            var query = new QueryOptions<Incident>
+            {
+                OrderBy = i => i.OrderBy(x => x.Title),
+            };
+
+            var incidents = _incidentRepo.List(query)
+                .ToList();
+
+            if (filter == "unassigned")
+            {
+                incidents = incidents.Where(i => i.TechnicianID == -1).ToList();
+            }
+            else if (filter == "open")
+            {
+                incidents = incidents.Where(i => i.DateClosed == null).ToList();
+            }
+
+            var viewModel = new IncidentManagerViewModel
+            {
+                Incidents = incidents,
+                FilterType = filter
+            };
+
+            return View(viewModel);
+        }
+
+        public IActionResult ListByTech()
+        {
+            var technicians = _technicianRepo.List(new QueryOptions<Technician>
+            {
+                OrderBy = t => t.OrderBy(x => x.Name)
+            }).ToList();
+
+            return View(technicians);
+        }
+
+        [HttpPost]
+        public IActionResult SelectTechnician(int? technicianId)
+        {
+            if (!technicianId.HasValue)
+            {
+                TempData["ErrorMessage"] = "Please select a technician.";
+                return RedirectToAction("ListByTech");
+            }
+
+            HttpContext.Session.SetInt32("TechnicianID", technicianId.Value);
+            return RedirectToAction("IncidentsByTechnician", new { id = technicianId });
+        }
+
+        public IActionResult IncidentsByTechnician(int id)
+        {
+            var technician = _technicianRepo.Get(id);
+            if (technician == null)
+            {
+                return RedirectToAction("ListByTech");
+            }
+
+            var incidents = _incidentRepo.List(new QueryOptions<Incident>
+            {
+                Where = i => i.TechnicianID == id && i.Status == "Open",
+                OrderBy = i => i.OrderBy(x => x.DateOpened)
+            }).ToList();
+
+            var viewModel = new IncidentsByTechnicianViewModel
+            {
+                Technician = technician,
+                Incidents = incidents
+            };
+
+            return View(viewModel);
         }
 
         [HttpGet]
         public IActionResult Add()
         {
-            // Create incident object
-            Incident incident = new Incident();
+            var viewModel = new IncidentEditViewModel
+            {
+                Customers = _customerRepo.List(new QueryOptions<Customer>()).ToList(),
+                Products = _productRepo.List(new QueryOptions<Product>()).ToList(),
+                Technicians = _technicianRepo.List(new QueryOptions<Technician>()).ToList(),
+                CurrentIncident = new Incident(),
+                OperationType = "Add"
+            };
 
-            ViewBag.Action = "Add";
-
-            // Load dropdown options for Customers, Products, and Technicians
-            ViewBag.Customers = new SelectList(context.Customers, "CustomerID", "FullName");
-            ViewBag.Products = new SelectList(context.Products, "ProductID", "Name");
-            ViewBag.Technicians = new SelectList(context.Technicians, "TechnicianID", "Name");
-
-            return View("AddEdit", incident); // Returns the page with the incident object
+            return View("AddEdit", viewModel);
         }
 
         [HttpPost]
@@ -44,39 +122,42 @@ namespace SportsPro.Controllers
             // If all inputs are valid, it adds the new incident to the database
             if (ModelState.IsValid)
             {
-                context.Incidents.Add(incident);
-                context.SaveChanges();
-                return RedirectToAction("List"); // Takes user to the list page
+                _incidentRepo.Insert(viewModel.CurrentIncident);
+                _incidentRepo.Save();
+                return RedirectToAction("List");
             }
 
-            ViewBag.Action = "Add";
+            viewModel.Customers = _customerRepo.List(new QueryOptions<Customer>()).ToList();
+            viewModel.Products = _productRepo.List(new QueryOptions<Product>()).ToList();
+            viewModel.Technicians = _technicianRepo.List(new QueryOptions<Technician>()).ToList();
+            viewModel.OperationType = "Add";
 
-            // If inputs not valid, reloads the dropdowns and shows the form again
-            ViewBag.Customers = new SelectList(context.Customers, "CustomerID", "FullName");
-            ViewBag.Products = new SelectList(context.Products, "ProductID", "Name");
-            ViewBag.Technicians = new SelectList(context.Technicians, "TechnicianID", "Name");
-
-            return View("AddEdit", incident); // Returns the page with the incident object
+            return View("AddEdit", viewModel);
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            // Find the incident by ID
-            Incident incident = context.Incidents
-                .Include(i => i.Customer)
-                .Include(i => i.Product)
-                .Include(i => i.Technician)
-                .FirstOrDefault(i => i.IncidentID == id);
+            var incident = _incidentRepo.List(new QueryOptions<Incident>
+            {
+                Where = i => i.IncidentID == id
+            }).FirstOrDefault();
 
-            // Fill in dropdown data
-            ViewBag.Customers = new SelectList(context.Customers, "CustomerID", "FullName", incident.CustomerID);
-            ViewBag.Products = new SelectList(context.Products, "ProductID", "Name", incident.ProductID);
-            ViewBag.Technicians = new SelectList(context.Technicians, "TechnicianID", "Name", incident.TechnicianID);
+            if (incident == null)
+            {
+                return RedirectToAction("List");
+            }
 
-            ViewBag.Action = "Edit";
+            var viewModel = new IncidentEditViewModel
+            {
+                Customers = _customerRepo.List(new QueryOptions<Customer>()).ToList(),
+                Products = _productRepo.List(new QueryOptions<Product>()).ToList(),
+                Technicians = _technicianRepo.List(new QueryOptions<Technician>()).ToList(),
+                CurrentIncident = incident,
+                OperationType = "Edit"
+            };
 
-            return View("AddEdit", incident); // Same site as the Add button, but with data filled in
+            return View("AddEdit", viewModel);
         }
 
         [HttpPost]
@@ -85,18 +166,51 @@ namespace SportsPro.Controllers
             // If all input is correct
             if (ModelState.IsValid)
             {
-                // Update the incident
-                context.Incidents.Update(incident);
-                context.SaveChanges();
-                return RedirectToAction("List"); // Takes user to the list page
+                _incidentRepo.Update(viewModel.CurrentIncident);
+                _incidentRepo.Save();
+                return RedirectToAction("List");
             }
 
-            // Load the dropdowns again if input is invalid
-            ViewBag.Customers = new SelectList(context.Customers, "CustomerID", "FullName", incident.CustomerID);
-            ViewBag.Products = new SelectList(context.Products, "ProductID", "Name", incident.ProductID);
-            ViewBag.Technicians = new SelectList(context.Technicians, "TechnicianID", "Name", incident.TechnicianID);
+            viewModel.Customers = _customerRepo.List(new QueryOptions<Customer>()).ToList();
+            viewModel.Products = _productRepo.List(new QueryOptions<Product>()).ToList();
+            viewModel.Technicians = _technicianRepo.List(new QueryOptions<Technician>()).ToList();
+            viewModel.OperationType = "Edit";
 
-            ViewBag.Action = "Edit";
+            return View("AddEdit", viewModel);
+        }
+
+        [HttpGet]
+        public IActionResult EditForTechnician(int id)
+        {
+            var incident = _incidentRepo.Get(id);
+            if (incident == null)
+            {
+                return RedirectToAction("ListByTech");
+            }
+
+            int? technicianID = HttpContext.Session.GetInt32("TechnicianID");
+            ViewBag.TechnicianID = technicianID;
+
+            return View("EditForTechnician", incident);
+        }
+
+        [HttpPost]
+        public IActionResult EditForTechnician(Incident incident)
+        {
+            if (ModelState.IsValid)
+            {
+                _incidentRepo.Update(incident);
+                _incidentRepo.Save();
+
+                int? technicianID = HttpContext.Session.GetInt32("TechnicianID");
+
+                if (technicianID == null || technicianID == 0)
+                {
+                    return RedirectToAction("ListByTech");
+                }
+
+                return RedirectToAction("IncidentsByTechnician", new { id = technicianID });
+            }
 
             return View("AddEdit", incident); // Reload the site if input is invalid
         }
@@ -104,21 +218,24 @@ namespace SportsPro.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            // Loads the incident that needs to be deleted
-            Incident incident = context.Incidents
-                .FirstOrDefault(i => i.IncidentID == id);
+            var incident = _incidentRepo.Get(id);
+            if (incident == null)
+            {
+                return RedirectToAction("List");
+            }
             return View(incident);
         }
 
         [HttpPost]
-        public IActionResult Delete(Incident incident)
+        public IActionResult DeleteConfirmed(int id)
         {
-            // Deletes the incident
-            context.Incidents.Remove(incident);
-            context.SaveChanges();
-            // Takes user back to the List page
+            var incident = _incidentRepo.Get(id);
+            if (incident != null)
+            {
+                _incidentRepo.Delete(incident);
+                _incidentRepo.Save();
+            }
             return RedirectToAction("List");
         }
     }
 }
-
