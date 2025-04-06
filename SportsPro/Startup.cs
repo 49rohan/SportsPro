@@ -20,6 +20,7 @@ namespace SportsPro
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddSession();
 
             services.AddDbContext<SportsProContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("SportsPro")));
@@ -46,6 +47,8 @@ namespace SportsPro
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
