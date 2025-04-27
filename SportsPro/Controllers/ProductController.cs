@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SportsPro.Models;
 using SportsPro.Models.Data;
 using System.Linq;
 
 namespace SportsPro.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly IRepository<Product> productRepo;

@@ -1,10 +1,12 @@
 using System;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SportsPro.Models.Data.Configuration;
 
 namespace SportsPro.Models
 {
-    public class SportsProContext : DbContext
+    public class SportsProContext : IdentityDbContext<User>
     {
         public SportsProContext(DbContextOptions<SportsProContext> options)
             : base(options)
@@ -19,6 +21,7 @@ namespace SportsPro.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             // Configure Registration relationships
             modelBuilder.Entity<Registration>()
                 .HasKey(r => r.RegistrationId);

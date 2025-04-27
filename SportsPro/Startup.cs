@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using SportsPro.Models;
 using SportsPro.Models.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace SportsPro
 {
@@ -32,6 +33,12 @@ namespace SportsPro
                 options.LowercaseUrls = true;
                 options.AppendTrailingSlash = true;
             });
+            services.AddIdentity<User, IdentityRole>(options => {
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireDigit = false;
+            }).AddEntityFrameworkStores<SportsProContext>()
+              .AddDefaultTokenProviders();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -49,6 +56,7 @@ namespace SportsPro
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseAuthentication();  
             app.UseAuthorization();
 
             app.UseSession();

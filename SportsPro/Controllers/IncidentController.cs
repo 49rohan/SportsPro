@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportsPro.Models;
@@ -8,6 +9,7 @@ using System.Linq;
 
 namespace SportsPro.Controllers
 {
+    [Authorize]
     public class IncidentController : Controller
     {
         private readonly IRepository<Incident> incidentRepo;
