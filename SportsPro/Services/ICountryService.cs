@@ -3,8 +3,8 @@ using SportsPro.Models;
 
 namespace SportsPro.Services
 {
-    public interface IProductService
+    public interface ICountryService
     {
-        IEnumerable<Product> GetAllProducts();
+        IEnumerable<Country> GetAllCountries();
     }
 }

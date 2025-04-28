@@ -1,4 +1,26 @@
-﻿@{
+﻿@model SportsPro.Models.ViewModels.SelectCustomerViewModel
+
+@{
+    ViewBag.Title = "Select a Customer";
+}
+
+<h2>Select a Customer</h2>
+
+<form asp-action="List" method="post">
+    <div class="form-group">
+        <label asp-for="CustomerID" class="control-label">Customer</label>
+        <customer-select asp-for="CustomerID"></customer-select>
+    </div>
+    <button type="submit" class="btn btn-primary">View Registrations</button>
+</form>
+
+@if (TempData["message"] != null)
+{
+    <div class="alert alert-info mt-3">@TempData["message"]</div>
+}
+
+
+@* @{
     ViewBag.Title = "Select a Customer";
 }
 
@@ -23,4 +45,4 @@
 @if (TempData["message"] != null)
 {
     <div class="alert alert-info mt-3">@TempData["message"]</div>
-}
+} *@

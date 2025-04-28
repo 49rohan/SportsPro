@@ -1,9 +1,10 @@
-﻿namespace SportsPro.Services
+﻿using System.Collections.Generic;
+using SportsPro.Models;
 
+namespace SportsPro.Services
 {
-    public class ICustomerService
+    public interface ICustomerService
     {
-
+        IEnumerable<Customer> GetAllCustomers();
     }
-
 }

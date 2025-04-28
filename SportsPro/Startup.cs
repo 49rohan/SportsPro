@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using SportsPro.Models;
 using SportsPro.Models.Data;
+using SportsPro.Services;
 
 namespace SportsPro
 {
@@ -24,7 +25,6 @@ namespace SportsPro
             services.AddSession();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-
             services.AddDbContext<SportsProContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("SportsPro")));
 
@@ -32,7 +32,13 @@ namespace SportsPro
                 options.LowercaseUrls = true;
                 options.AppendTrailingSlash = true;
             });
+
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<ITechnicianService, TechnicianService>();
+            services.AddScoped<ICountryService, CountryService>();
         }
+
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
