@@ -1,13 +1,3 @@
-﻿@model SportsPro.Models.Incident
-@{
-    ViewBag.Title = "Delete Incident";
-}
+﻿@model SportsPro.Models.ViewModels.DeleteViewModel
 
-<h1>Confirm Deletion</h1>
-<h3>Incident Title: @Model.Title</h3>
-
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="IncidentID" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a asp-action="List" class="btn btn-secondary">Cancel</a>
-</form>
+<vc:confirm-delete-incident model="Model"></vc:confirm-delete-incident>

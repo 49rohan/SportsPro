@@ -206,15 +206,31 @@ namespace SportsPro.Controllers
         public IActionResult Delete(int id)
         {
             var incident = incidentRepo.Get(id);
-            return incident == null ? RedirectToAction("List") : View(incident);
+            if (incident == null)
+            {
+                return NotFound();
+            }
+
+            var model = new DeleteViewModel
+            {
+                Id = incident.IncidentID,
+                Name = incident.Title  
+            };
+
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult Delete(Incident incident)
+        public IActionResult Delete(DeleteViewModel model)
         {
-            incidentRepo.Delete(incident);
-            incidentRepo.Save();
+            var incident = incidentRepo.Get(model.Id);
+            if (incident != null)
+            {
+                incidentRepo.Delete(incident);
+                incidentRepo.Save();
+            }
             return RedirectToAction("List");
         }
+
     }
 }
