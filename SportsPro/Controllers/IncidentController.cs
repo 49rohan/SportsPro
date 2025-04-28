@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportsPro.Models;
@@ -9,7 +8,7 @@ using System.Linq;
 
 namespace SportsPro.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "RequireAdminRole")]
     public class IncidentController : Controller
     {
         private readonly IRepository<Incident> incidentRepo;
@@ -25,7 +24,10 @@ namespace SportsPro.Controllers
             technicianRepo = tr;
         }
 
-        public IActionResult List(string filter = "All")
+        [Route("/incidents")]
+        [Authorize(Policy = "RequireAdminRole")]
+
+        public IActionResult List()
         {
             var options = new QueryOptions<Incident>
             {
@@ -101,6 +103,8 @@ namespace SportsPro.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "RequireAdminRole")]
+
         public IActionResult Add()
         {
             var viewModel = new IncidentEditViewModel
@@ -116,7 +120,9 @@ namespace SportsPro.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(IncidentEditViewModel viewModel)
+
+        [Authorize(Policy = "RequireAuthenticatedUser")]
+        public IActionResult Add(Incident incident)
         {
             if (ModelState.IsValid)
             {
@@ -134,6 +140,7 @@ namespace SportsPro.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "RequireAuthenticatedUser")]
         public IActionResult Edit(int id)
         {
             var incident = incidentRepo.List(new QueryOptions<Incident>())

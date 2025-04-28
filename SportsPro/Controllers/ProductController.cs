@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SportsPro.Models;
 using SportsPro.Models.Data;
@@ -6,7 +8,7 @@ using System.Linq;
 
 namespace SportsPro.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "RequireAdminRole")]
     public class ProductController : Controller
     {
         private readonly IRepository<Product> productRepo;

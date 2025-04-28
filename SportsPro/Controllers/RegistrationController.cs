@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportsPro.Models;
 using System.Linq;
 
 namespace SportsPro.Controllers
 {
+    [Authorize(Policy = "RequireAdminRole")]
     public class RegistrationController : Controller
     {
         private SportsProContext context;

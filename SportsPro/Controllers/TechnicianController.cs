@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SportsPro.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "RequireAdminRole")]
     public class TechnicianController : Controller
     {
         private readonly IRepository<Technician> techRepo;

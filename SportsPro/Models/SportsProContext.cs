@@ -1,8 +1,5 @@
-using System;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using SportsPro.Models.Data.Configuration;
+using System;
 
 namespace SportsPro.Models
 {
@@ -10,8 +7,10 @@ namespace SportsPro.Models
     {
         public SportsProContext(DbContextOptions<SportsProContext> options)
             : base(options)
-        { }
+        {
+        }
 
+        // Add DbSet properties for each entity
         public DbSet<Product> Products { get; set; }
         public DbSet<Technician> Technicians { get; set; }
         public DbSet<Country> Countries { get; set; }
@@ -22,7 +21,7 @@ namespace SportsPro.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            // Configure Registration relationships
+            // Your model configurations
             modelBuilder.Entity<Registration>()
                 .HasKey(r => r.RegistrationId);
 

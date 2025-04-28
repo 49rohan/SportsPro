@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace SportsPro.Controllers
+
 {
-    [Authorize]
+    [Authorize(Policy = "RequireAdminRole")]
     public class CustomerController : Controller
     {
-        private readonly IRepository<Customer> customerRepo;
-        private readonly IRepository<Country> countryRepo;
+
+        private readonly SportsProContext _context;
 
         public CustomerController(IRepository<Customer> cRepo, IRepository<Country> coRepo)
         {
