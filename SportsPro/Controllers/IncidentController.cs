@@ -9,7 +9,6 @@ using System.Linq;
 
 namespace SportsPro.Controllers
 {
-    [Authorize]
     public class IncidentController : Controller
     {
         private readonly IRepository<Incident> incidentRepo;
@@ -25,13 +24,13 @@ namespace SportsPro.Controllers
             technicianRepo = tr;
         }
 
+        [Authorize]
         public IActionResult List(string filter = "All")
         {
             var options = new QueryOptions<Incident>
             {
                 OrderBy = i => i.Title
             };
-
             if (filter == "unassigned")
             {
                 options.Where = i => i.TechnicianID == -1;
@@ -56,12 +55,14 @@ namespace SportsPro.Controllers
             return View(viewModel);
         }
 
+        [Authorize]
         public IActionResult ListByTech()
         {
             var techs = technicianRepo.List(new QueryOptions<Technician> { OrderBy = t => t.Name }).ToList();
             return View(techs);
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult SelectTechnician(int? technicianId)
         {
@@ -70,11 +71,11 @@ namespace SportsPro.Controllers
                 TempData["ErrorMessage"] = "Please select a technician.";
                 return RedirectToAction("ListByTech");
             }
-
             HttpContext.Session.SetInt32("TechnicianID", technicianId.Value);
             return RedirectToAction("IncidentsByTechnician", new { id = technicianId });
         }
 
+        [Authorize]
         public IActionResult IncidentsByTechnician(int id)
         {
             var tech = technicianRepo.Get(id);
@@ -100,6 +101,7 @@ namespace SportsPro.Controllers
             return View(viewModel);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Add()
         {
@@ -111,10 +113,10 @@ namespace SportsPro.Controllers
                 CurrentIncident = new Incident(),
                 OperationType = "Add"
             };
-
             return View("AddEdit", viewModel);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Add(IncidentEditViewModel viewModel)
         {
@@ -124,15 +126,14 @@ namespace SportsPro.Controllers
                 incidentRepo.Save();
                 return RedirectToAction("List");
             }
-
             viewModel.Customers = customerRepo.List(new QueryOptions<Customer>()).ToList();
             viewModel.Products = productRepo.List(new QueryOptions<Product>()).ToList();
             viewModel.Technicians = technicianRepo.List(new QueryOptions<Technician>()).ToList();
             viewModel.OperationType = "Add";
-
             return View("AddEdit", viewModel);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -141,7 +142,6 @@ namespace SportsPro.Controllers
                 .Include(i => i.Product)
                 .Include(i => i.Technician)
                 .FirstOrDefault(i => i.IncidentID == id);
-
             if (incident == null) return RedirectToAction("List");
 
             var viewModel = new IncidentEditViewModel
@@ -152,10 +152,10 @@ namespace SportsPro.Controllers
                 CurrentIncident = incident,
                 OperationType = "Edit"
             };
-
             return View("AddEdit", viewModel);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Edit(IncidentEditViewModel viewModel)
         {
@@ -165,15 +165,14 @@ namespace SportsPro.Controllers
                 incidentRepo.Save();
                 return RedirectToAction("List");
             }
-
             viewModel.Customers = customerRepo.List(new QueryOptions<Customer>()).ToList();
             viewModel.Products = productRepo.List(new QueryOptions<Product>()).ToList();
             viewModel.Technicians = technicianRepo.List(new QueryOptions<Technician>()).ToList();
             viewModel.OperationType = "Edit";
-
             return View("AddEdit", viewModel);
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult EditForTechnician(int id)
         {
@@ -182,13 +181,13 @@ namespace SportsPro.Controllers
                 .Include(i => i.Product)
                 .Include(i => i.Technician)
                 .FirstOrDefault(i => i.IncidentID == id);
-
             if (incident == null) return RedirectToAction("ListByTech");
 
             ViewBag.TechnicianID = HttpContext.Session.GetInt32("TechnicianID");
             return View("EditForTechnician", incident);
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult EditForTechnician(Incident incident)
         {
@@ -196,14 +195,13 @@ namespace SportsPro.Controllers
             {
                 incidentRepo.Update(incident);
                 incidentRepo.Save();
-
                 int? techId = HttpContext.Session.GetInt32("TechnicianID");
                 return RedirectToAction("IncidentsByTechnician", new { id = techId ?? 0 });
             }
-
             return View("EditForTechnician", incident);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Delete(int id)
         {
@@ -211,6 +209,7 @@ namespace SportsPro.Controllers
             return incident == null ? RedirectToAction("List") : View(incident);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Delete(Incident incident)
         {

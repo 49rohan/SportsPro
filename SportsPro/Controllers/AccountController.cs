@@ -10,12 +10,15 @@ namespace SportsPro.Controllers
     {
         private UserManager<User> userManager;
         private SignInManager<User> signInManager;
+        private RoleManager<IdentityRole> roleManager;
 
         public AccountController(UserManager<User> userMngr,
-            SignInManager<User> signInMngr)
+            SignInManager<User> signInMngr,
+            RoleManager<IdentityRole> roleMngr)
         {
             userManager = userMngr;
             signInManager = signInMngr;
+            roleManager = roleMngr;
         }
 
         [HttpGet]
@@ -27,7 +30,6 @@ namespace SportsPro.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-
             if (ModelState.IsValid)
             {
                 var user = new SportsPro.Models.User
@@ -38,9 +40,11 @@ namespace SportsPro.Controllers
                     Email = model.Email
                 };
                 var result = await userManager.CreateAsync(user, model.Password);
-
                 if (result.Succeeded)
                 {
+                    // By default, assign new users to Technician role
+                    await userManager.AddToRoleAsync(user, "Technician");
+
                     await signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }
@@ -77,7 +81,6 @@ namespace SportsPro.Controllers
                 var result = await signInManager.PasswordSignInAsync(
                     model.Username, model.Password, isPersistent: model.RememberMe,
                     lockoutOnFailure: false);
-
                 if (result.Succeeded)
                 {
                     if (!string.IsNullOrEmpty(model.ReturnUrl) &&

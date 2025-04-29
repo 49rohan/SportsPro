@@ -22,15 +22,14 @@ namespace SportsPro.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             // Configure Registration relationships
             modelBuilder.Entity<Registration>()
                 .HasKey(r => r.RegistrationId);
-
             modelBuilder.Entity<Registration>()
                 .HasOne(r => r.Customer)
                 .WithMany(c => c.Registrations)
                 .HasForeignKey(r => r.CustomerID);
-
             modelBuilder.Entity<Registration>()
                 .HasOne(r => r.Product)
                 .WithMany(p => p.Registrations)
