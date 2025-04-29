@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SportsPro.Models;
 using SportsPro.Models.Data;
 using System.Linq;
 
 namespace SportsPro.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ProductController : Controller
     {
         private readonly IRepository<Product> productRepo;
-
         public ProductController(IRepository<Product> repo)
         {
             productRepo = repo;
@@ -38,12 +39,10 @@ namespace SportsPro.Controllers
                     productRepo.Insert(product);
                 else
                     productRepo.Update(product);
-
                 productRepo.Save();
                 TempData["message"] = $"{product.Name} was saved";
                 return RedirectToAction("List");
             }
-
             ViewBag.Action = (product.ProductID == 0) ? "Add" : "Edit";
             return View(product);
         }
