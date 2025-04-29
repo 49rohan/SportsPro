@@ -20,19 +20,80 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <div class="navbar-nav mr-auto">
-                    <a class="nav-item nav-link" asp-controller="Home" asp-action="Index">Home</a>
-                    <a class="nav-item nav-link" asp-controller="Product" asp-action="List">Products</a>
-                    <a class="nav-item nav-link" asp-controller="Technician" asp-action="List">Technicians</a>
-                    <a class="nav-item nav-link" asp-controller="Customer" asp-action="List">Customers</a>
-                    <a class="nav-item nav-link" asp-controller="Incident" asp-action="List">Incidents</a>
-                    <a class="nav-item nav-link" asp-controller="Registration" asp-action="GetCustomer">Registrations</a>
-                    <a class="nav-item nav-link" asp-controller="Home" asp-action="About">About</a>
-                </div>
-            </div>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item @Nav.Active("Home", current)">
+                    <a class="nav-link" asp-action="Index" asp-controller="Home">
+                        <span class="fas fa-home"></span>&nbsp;Home
+                    </a>
+                </li>
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item @Nav.Active("Product", current)">
+                        <a class="nav-link" asp-action="List" asp-controller="Product">
+                            <span class="fas fa-box"></span>&nbsp;Products
+                        </a>
+                    </li>
+                    <li class="nav-item @Nav.Active("Technician", current)">
+                        <a class="nav-link" asp-action="List" asp-controller="Technician">
+                            <span class="fas fa-tools"></span>&nbsp;Technicians
+                        </a>
+                    </li>
+                    <li class="nav-item @Nav.Active("Customer", current)">
+                        <a class="nav-link" asp-action="List" asp-controller="Customer">
+                            <span class="fas fa-user"></span>&nbsp;Customers
+                        </a>
+                    </li>
+                }
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li class="nav-item @Nav.Active("Incident", current)">
+                        <a class="nav-link" asp-action="List" asp-controller="Incident">
+                            <span class="fas fa-exclamation-triangle"></span>&nbsp;Incidents
+                        </a>
+                    </li>
+                    <li class="nav-item @Nav.Active("Registration", current)">
+                        <a class="nav-link" asp-action="GetCustomer" asp-controller="Registration">
+                            <span class="fas fa-clipboard-list"></span>&nbsp;Registrations
+                        </a>
+                    </li>
+                }
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                @using Microsoft.AspNetCore.Identity
+                @inject SignInManager<User> signInManager
+                @if (signInManager.IsSignedIn(User))
+                {
+                    <li class="nav-item">
+                        <form method="post" asp-action="LogOut" asp-controller="Account" class="form-inline">
+                            <span class="text-light ml-2"> <strong>Welcome, @User.Identity.Name</strong></span>
+                            <button type="submit" class="btn text-light">
+                                Log Out
+                            </button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    var action = ViewContext.RouteData.Values["action"]?.ToString();
+                    <li class="nav-item @(action == "Register" ? "active" : "")">
+                        <a class="nav-link" asp-action="Register" asp-controller="Account">
+                            <span class="fas fa-user-plus"></span>&nbsp;Register
+                        </a>
+                    </li>
+                    <li class="nav-item @(action == "Login" ? "active" : "")">
+                        <a class="nav-link" asp-action="Login" asp-controller="Account">
+                            <span class="fas fa-sign-in-alt"></span>&nbsp;Login
+                        </a>
+                    </li>
+                }
+                <li class="nav-item @Nav.Active("Home", current)">
+                    <a class="nav-link" asp-action="About" asp-controller="Home">
+                        <span class="fas fa-info-circle"></span>&nbsp;About
+                    </a>
+                </li>
+            </ul>
+         
         </nav>
-    </header>
 
     <temp-message></temp-message>
   
@@ -76,7 +137,6 @@
                     }
                 </ul>
                 <ul class="navbar-nav ml-auto">
-                    @using Microsoft.AspNetCore.Identity
                     @inject SignInManager<User> signInManager
                     @if (signInManager.IsSignedIn(User))
                     {
