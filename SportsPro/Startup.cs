@@ -6,10 +6,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using SportsPro.Models;
 using SportsPro.Models.Data;
+
+using SportsPro.Services;
+
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
+
 
 namespace SportsPro
 {
@@ -27,6 +31,7 @@ namespace SportsPro
             services.AddControllersWithViews();
             services.AddSession();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
             services.AddDbContext<SportsProContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("SportsPro")));
 
@@ -35,13 +40,21 @@ namespace SportsPro
                 options.AppendTrailingSlash = true;
             });
 
+
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<ITechnicianService, TechnicianService>();
+            services.AddScoped<ICountryService, CountryService>();
+
             services.AddIdentity<User, IdentityRole>(options => {
                 options.Password.RequiredLength = 6;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
             }).AddEntityFrameworkStores<SportsProContext>()
               .AddDefaultTokenProviders();
+
         }
+
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

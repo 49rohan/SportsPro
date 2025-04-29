@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SportsPro.Models;
 using SportsPro.Models.Data;
+using SportsPro.Models.ViewModels;
 using System.Linq;
 
 namespace SportsPro.Controllers
@@ -51,16 +52,31 @@ namespace SportsPro.Controllers
         public IActionResult Delete(int id)
         {
             var product = productRepo.Get(id);
-            return View(product);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var model = new DeleteViewModel
+            {
+                Id = product.ProductID,
+                Name = product.Name
+            };
+
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult Delete(Product product)
+        public IActionResult Delete(DeleteViewModel model)
         {
-            productRepo.Delete(product);
-            productRepo.Save();
-            TempData["delete"] = $"{product.Name} was deleted";
+            var product = productRepo.Get(model.Id);
+            if (product != null)
+            {
+                productRepo.Delete(product);
+                productRepo.Save();
+            }
             return RedirectToAction("List");
         }
+
     }
 }

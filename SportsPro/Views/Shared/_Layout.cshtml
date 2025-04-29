@@ -19,6 +19,23 @@
                     aria-controls="menu" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="navbar-nav mr-auto">
+                    <a class="nav-item nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                    <a class="nav-item nav-link" asp-controller="Product" asp-action="List">Products</a>
+                    <a class="nav-item nav-link" asp-controller="Technician" asp-action="List">Technicians</a>
+                    <a class="nav-item nav-link" asp-controller="Customer" asp-action="List">Customers</a>
+                    <a class="nav-item nav-link" asp-controller="Incident" asp-action="List">Incidents</a>
+                    <a class="nav-item nav-link" asp-controller="Registration" asp-action="GetCustomer">Registrations</a>
+                    <a class="nav-item nav-link" asp-controller="Home" asp-action="About">About</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <temp-message></temp-message>
+  
             <div class="collapse navbar-collapse" id="menu">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item @Nav.Active("Home", current)">
@@ -112,9 +129,10 @@
             @RenderBody()
         </main>
     </div>
-    <footer class="border-top footer text-muted">
-        <div class="container">&copy; @DateTime.Now.Year - SportsPro</div>
-    </footer>
+
+    @await Component.InvokeAsync("Copyright")
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
     @RenderSection("Scripts", required: false)
 </body>
 </html>
