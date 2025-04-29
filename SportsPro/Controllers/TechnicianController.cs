@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SportsPro.Models;
 using SportsPro.Models.Data;
 using SportsPro.Models.ViewModels;
@@ -6,6 +7,7 @@ using System.Linq;
 
 namespace SportsPro.Controllers
 {
+    [Authorize]
     public class TechnicianController : Controller
     {
         private readonly IRepository<Technician> technicianRepo;

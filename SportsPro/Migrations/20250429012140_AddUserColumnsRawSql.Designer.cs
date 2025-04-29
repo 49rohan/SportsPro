@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsPro.Models;
 
@@ -11,9 +12,11 @@ using SportsPro.Models;
 namespace SportsPro.Migrations
 {
     [DbContext(typeof(SportsProContext))]
-    partial class SportsProContextModelSnapshot : ModelSnapshot
+    [Migration("20250429012140_AddUserColumnsRawSql")]
+    partial class AddUserColumnsRawSql
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -765,7 +768,6 @@ namespace SportsPro.Migrations
                         });
                 });
 
-
             modelBuilder.Entity("SportsPro.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -890,7 +892,6 @@ namespace SportsPro.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
-
 
             modelBuilder.Entity("SportsPro.Models.Incident", b =>
                 {

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SportsPro.Models;
@@ -8,6 +9,7 @@ using System.Linq;
 
 namespace SportsPro.Controllers
 {
+    [Authorize]
     public class CustomerController : Controller
     {
         private readonly IRepository<Customer> customerRepo;
